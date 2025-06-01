@@ -194,7 +194,7 @@ class PersonalController extends AppBaseController
     public function exportAllPersonal(Request $request){
 
         try {
-         $data = $this->repository->personalReport();
+         $data = $this->repository->personalReport($request);
         //  return $this->sendResponse($data["personal"], '');
 
          $nameFile =  'REPORTE_PERSONAL_'.Carbon::now()->format('dmy').'.xlsx';
