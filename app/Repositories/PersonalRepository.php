@@ -187,7 +187,7 @@ class PersonalRepository extends BaseRepository {
         $perPage = isset($request->perPage) ? $request->perPage : 10;
         try {
         $unidades = DB::table('unidades_fisicas_ejecutoras')
-                    ->select('codigo_unidad_admin', 'codigo_unidad_ejec', 'descripcion_unidad_admin')
+                    ->select('codigo_unidad_admin', 'codigo_unidad_ejec', 'descripcion_unidad_admin', 'descripcion_unidad_ejec')
                     ->distinct('codigo_unidad_admin');
 
         $personal = DB::table('personal')->select('unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_ejec','nucleo.nombre', 'personal.cod_nucleo', DB::raw('count(personal.id) as personal_reg'))
@@ -200,6 +200,7 @@ class PersonalRepository extends BaseRepository {
                     ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec');
                 });
             })
+            ->whereRaw('SUBSTR(personal.cod_nucleo, 1,1) = ?', [$request->nucleo])
             ->leftJoin('nucleo', DB::raw("SUBSTR(personal.cod_nucleo, 1,1)"), '=', 'nucleo.codigo_1')
             ->groupBy('unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'nucleo.nombre', 'unidades_fisicas_ejecutoras.codigo_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal.cod_nucleo');
 
@@ -213,43 +214,42 @@ class PersonalRepository extends BaseRepository {
         }
     }
 
-    public function personalReport(){
+    public function personalReport($request){
 
         try {
         $unidades = DB::table('unidades_fisicas_ejecutoras')
-                    ->select('codigo_unidad_admin', 'codigo_unidad_ejec', 'descripcion_unidad_admin')
+                    ->select('codigo_unidad_admin', 'codigo_unidad_ejec', 'descripcion_unidad_admin', 'descripcion_unidad_ejec')
                     ->distinct('codigo_unidad_admin');
 
-          $personal_all = DB::table('personal')->select('personal.cedula_identidad', 'personal.nombres_apellidos', 'personal.jefe', 'personal.telefono', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
-          ->where('jefe', 0)
-           ->join('personal_unidades', function ($join) use($unidades){
+          $personal_all = DB::table('personal')->select('personal.*', 'unidades_fisicas_ejecutoras.codigo_unidad_admin', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'unidades_fisicas_ejecutoras.descripcion_unidad_ejec', 'tipo_prenda.descripcion as tipo_prenda_descripcion', 'tipo_calzado.descripcion as tipo_calzado_descripcion')
+            ->where('jefe', 0)
+            ->whereRaw('SUBSTR(personal.cod_nucleo, 1,1) = ?', [$request->nucleo])
+            ->join('personal_unidades', function ($join) use($unidades){
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
                 ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join){
                     $join->on('personal_unidades.codigo_unidad_admin', '=', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
                     ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec');
                 });
             })
-          ->get();
-        //   $personal_all = DB::table('personal_migracion')->select('personal_migracion.cedula_identidad', 'personal_migracion.nombres as nombres_apellidos')
-        //     ->whereNotIn('personal_migracion.cedula_identidad', function($query){
-        //         $query->select('cedula_identidad')
-        //         ->from('personal');
-        //     })
-        //     ->where('personal_migracion.cod_nucleo', 1)
-        //   ->get();
+            ->join('tipo_prenda', 'personal.prenda_extra', 'tipo_prenda.id')
+            ->join('tipo_calzado', 'personal.tipo_calzado', 'tipo_calzado.id')
+            ->get();
 
 
-          $jefes = DB::table('personal')->select('personal.cedula_identidad', 'personal.nombres_apellidos', 'personal.jefe', 'personal.correo', 'personal.telefono', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
-          ->where('jefe', 1)
-          ->join('users', 'personal.cedula_identidad', 'users.cedula')
-          ->join('personal_unidades', function ($join) use($unidades){
+        $jefes = DB::table('personal')->select('personal.*', 'unidades_fisicas_ejecutoras.codigo_unidad_admin', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'unidades_fisicas_ejecutoras.descripcion_unidad_ejec', 'tipo_prenda.descripcion as tipo_prenda_descripcion', 'tipo_calzado.descripcion as tipo_calzado_descripcion')
+            ->where('jefe', 1)
+            ->whereRaw('SUBSTR(personal.cod_nucleo, 1,1) = ?', [$request->nucleo])
+            ->join('users', 'personal.cedula_identidad', 'users.cedula')
+            ->join('tipo_prenda', 'personal.prenda_extra', 'tipo_prenda.id')
+            ->join('tipo_calzado', 'personal.tipo_calzado', 'tipo_calzado.id')
+            ->join('personal_unidades', function ($join) use($unidades){
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
                 ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join){
                     $join->on('personal_unidades.codigo_unidad_admin', '=', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
                     ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec');
                 });
             })
-          ->get();
+            ->get();
         //   $jefes = DB::table('personal')->select('personal.cedula_identidad', 'personal.nombres_apellidos', 'personal.jefe', 'personal.correo', 'personal.telefono', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
         //   ->where('jefe', 1)
         //   ->whereNotIn('personal.cedula_identidad', function($query){

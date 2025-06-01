@@ -20,6 +20,7 @@ class CatalogueController extends AppBaseController
         'TIPO_PRENDA'       => ['model' => \App\Models\TipoPrenda::class],
         'TIPO_CALZADO'      => ['model' => \App\Models\TipoCalzado::class],
         'AREA_TRABAJO'      => ['model' => \App\Models\AreaTrabajo::class],
+        'NUCLEO'            => ['model' => \App\Models\Nucleo::class],
     ];
 
     public function __construct(Request $request)
