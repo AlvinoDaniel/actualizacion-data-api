@@ -218,17 +218,17 @@ class PersonalRepository extends BaseRepository {
 
         try {
         $unidades = DB::table('unidades_fisicas_ejecutoras')
-                    ->select('codigo_unidad_admin', 'codigo_unidad_ejec', 'descripcion_unidad_admin', 'descripcion_unidad_ejec')
+                    ->select('codigo_unidad_admin', 'codigo_unidad_ejec', 'descripcion_unidad_admin', 'descripcion_unidad_ejec', 'cod_nucleo')
                     ->distinct('codigo_unidad_admin');
 
           $personal_all = DB::table('personal')->select('personal.*', 'unidades_fisicas_ejecutoras.codigo_unidad_admin', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'unidades_fisicas_ejecutoras.descripcion_unidad_ejec', 'tipo_prenda.descripcion as tipo_prenda_descripcion', 'tipo_calzado.descripcion as tipo_calzado_descripcion')
             ->where('jefe', 0)
-            ->whereRaw('SUBSTR(personal.cod_nucleo, 1,1) = ?', [$request->nucleo])
-            ->join('personal_unidades', function ($join) use($unidades){
+            ->join('personal_unidades', function ($join) use($unidades, $request){
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
-                ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join){
+                ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join) use($request){
                     $join->on('personal_unidades.codigo_unidad_admin', '=', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
-                    ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec');
+                    ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec')
+                    ->whereRaw('SUBSTR(unidades_fisicas_ejecutoras.cod_nucleo, 1,1) = ?', [$request->nucleo]);
                 });
             })
             ->join('tipo_prenda', 'personal.prenda_extra', 'tipo_prenda.id')
@@ -238,15 +238,16 @@ class PersonalRepository extends BaseRepository {
 
         $jefes = DB::table('personal')->select('personal.*', 'unidades_fisicas_ejecutoras.codigo_unidad_admin', 'unidades_fisicas_ejecutoras.descripcion_unidad_admin', 'unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'unidades_fisicas_ejecutoras.descripcion_unidad_ejec', 'tipo_prenda.descripcion as tipo_prenda_descripcion', 'tipo_calzado.descripcion as tipo_calzado_descripcion')
             ->where('jefe', 1)
-            ->whereRaw('SUBSTR(personal.cod_nucleo, 1,1) = ?', [$request->nucleo])
+            // ->whereRaw('SUBSTR(personal.cod_nucleo, 1,1) = ?', [$request->nucleo])
             ->join('users', 'personal.cedula_identidad', 'users.cedula')
             ->join('tipo_prenda', 'personal.prenda_extra', 'tipo_prenda.id')
             ->join('tipo_calzado', 'personal.tipo_calzado', 'tipo_calzado.id')
-            ->join('personal_unidades', function ($join) use($unidades){
+            ->join('personal_unidades', function ($join) use($unidades, $request){
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
-                ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join){
+                ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join) use($request){
                     $join->on('personal_unidades.codigo_unidad_admin', '=', 'unidades_fisicas_ejecutoras.codigo_unidad_admin')
-                    ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec');
+                    ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec')
+                    ->whereRaw('SUBSTR(unidades_fisicas_ejecutoras.cod_nucleo, 1,1) = ?', [$request->nucleo]);
                 });
             })
             ->get();
