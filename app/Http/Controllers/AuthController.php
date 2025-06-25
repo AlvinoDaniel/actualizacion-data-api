@@ -9,6 +9,7 @@ use App\Http\Controllers\AppBaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Resources\UserMeResource;
 use App\Http\Resources\UserAuthCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -68,8 +69,9 @@ class AuthController extends AppBaseController
     */
    public function me()
    {
-      $user = Auth::user()->load(['personal', 'personal.nucleo', 'personal.tipoPersonal']);
-      return $this->sendResponse([ 'user' => $user ], 'Datos de Usuario Logeado');
+      $user = Auth::user()->load(['personal', 'personal.nucleo', 'personal.tipoPersonal', 'personal.unidades.entidad.unidad_ejecutora', 'personal.unidades.entidad.escuela']);
+
+      return $this->sendResponse([ 'user' => new UserMeResource($user) ], 'Datos de Usuario Logeado');
    }
 
      /**

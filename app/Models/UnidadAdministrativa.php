@@ -18,9 +18,10 @@ class UnidadAdministrativa extends Model
         'correo_dependencia',
         'activo',
         'id_unidad_ejec',
-        'id_escuela',
-        'id_unidad_padre',
+        'cod_escuela',
+        'cod_unidad_padre',
         'año',
+        'cod_ejec_anterior',
     ];
 
     public function nucleo()
@@ -30,11 +31,11 @@ class UnidadAdministrativa extends Model
 
     public function unidad_ejecutora()
     {
-        return $this->hasOne(UnidadEjecutora::class, 'id_unidad_ejec');
+        return $this->hasOne(UnidadEjecutora::class, 'id', 'id_unidad_ejec');
     }
 
     public function escuela()
     {
-        return $this->hasOne(Escuela::class, 'id_escuela');
+        return $this->hasOne(Escuela::class, 'id', 'cod_escuela');
     }
 }

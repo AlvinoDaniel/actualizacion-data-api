@@ -136,8 +136,8 @@ class PersonalController extends AppBaseController
 
             $pdf = \PDF::loadView('pdf.personal_registrado', [
                'personal'           => $personal,
-                'unidad_admin'      => $unidad->descripcion_unidad_admin ?? '',
-                'unidad_ejec'       => $unidad->descripcion_unidad_ejec ?? '',
+                'unidad_admin'      => $unidad->descripcion ?? '',
+                'unidad_ejec'       => $unidad?->unidad_ejecutora?->descripcion ?? '',
                 'nucleo'            => $unidad->nucleo->nombre ?? '',
                 'fecha'             => Carbon::now()->format('d/m/Y'),
             ]);
