@@ -126,7 +126,7 @@ class PersonalRepository extends BaseRepository {
         $personal->unidades()->create([
         //   'codigo_unidad_admin' => $unidad_admin,
         //   'codigo_unidad_ejec'  => $unidad_ejec,
-          'id_unidad_admin'     => $departamento->id_unidad_admin,
+          'id_unidad_admin'     => $request['unidad'],
         ]);
       DB::commit();
       return $personal;
@@ -256,12 +256,7 @@ class PersonalRepository extends BaseRepository {
             ->join('tipo_prenda', 'personal.prenda_extra', 'tipo_prenda.id')
             ->join('tipo_calzado', 'personal.tipo_calzado', 'tipo_calzado.id')
             ->join('personal_unidades', function ($join) use($unidades, $request){
-                $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
-                ->joinSub($unidades, 'unidades_fisicas_ejecutoras', function ($join) use($request){
-                    $join->on('personal_unidades.codigo_unidad_admin', '=', 'unidades_fisicas_ejecutoras.codigo_unidad_admin');
-                    // ->whereColumn('unidades_fisicas_ejecutoras.codigo_unidad_ejec', 'personal_unidades.codigo_unidad_ejec')
-                    // ->whereRaw('SUBSTR(unidades_fisicas_ejecutoras.cod_nucleo, 1,1) = ?', [$request->nucleo]);
-                });
+                $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad');
             })
             ->join('unidades_administrativas', function ($join) use($request){
                 $join->on('personal_unidades.id_unidad_admin', '=', 'unidades_administrativas.id')
@@ -293,5 +288,36 @@ class PersonalRepository extends BaseRepository {
           throw new Exception($th->getMessage());
         }
     }
+
+    public function getUnidsWithoutBoss(){
+        try {
+            $unids = UnidadAdministrativa::where('jefe', 0)->get();
+            return $unids;
+        } catch (\Throwable $th) {
+            throw new Exception($th->getMessage());
+        }
+    }
+
+     public function personalByUnidWithoutBoss($request){
+      try {
+        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec', 'personal_unidades.id_unidad_admin', 'unidades_administrativas.descripcion as descripcion_unidad')
+            ->where('personal.jefe', 0)
+            ->join('personal_unidades', function ($join) {
+                $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad');
+            })
+            ->join('unidades_administrativas', function ($join) use($request){
+                $join->on('personal_unidades.id_unidad_admin', '=', 'unidades_administrativas.id')
+                ->where('unidades_administrativas.jefe', 0)
+                ->where('unidades_administrativas.cod_nucleo', $request->nucleo)
+               ->leftJoin('unidades_ejecutoras', 'unidades_administrativas.id_unidad_ejec', '=', 'unidades_ejecutoras.id');
+            })
+            ->leftJoin('tipo_personal', 'personal.tipo_personal', '=', 'tipo_personal.id')
+            ->leftJoin('nucleo', DB::raw("SUBSTR(personal.cod_nucleo, 1,1)"), '=', 'nucleo.codigo_1')
+            ->get();
+        return $personal;
+      } catch (\Throwable $th) {
+        throw new Exception($th->getMessage());
+      }
+  }
 
 }

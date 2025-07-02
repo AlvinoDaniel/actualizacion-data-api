@@ -22,6 +22,11 @@ class UnidadAdministrativa extends Model
         'cod_unidad_padre',
         'año',
         'cod_ejec_anterior',
+        'jefe'
+    ];
+
+    protected $casts = [
+        'jefe' => 'boolean',
     ];
 
     public function nucleo()

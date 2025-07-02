@@ -210,4 +210,35 @@ class PersonalController extends AppBaseController
         }
 
     }
+
+     /**
+     * Listar todo el Personal Sin Jefe.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getPersonalLagging(Request $request)
+    {
+        try {
+            $personal = $this->repository->personalByUnidWithoutBoss($request);
+            $message = 'Lista de Trabajadores';
+            return $this->sendResponse(['personal' => $personal], $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
+     /**
+     * Listar todo el Personal Sin Jefe.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getUnidsWithoutLeadership()
+    {
+        try {
+            $unids = $this->repository->getUnidsWithoutBoss();
+            $message = 'Lista de Unidades';
+            return $this->sendResponse(['unidades' => $unids], $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
 }
