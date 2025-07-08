@@ -23,6 +23,7 @@ class UserMeResource extends JsonResource
             "personal_id"       => $this->personal_id,
             "status"            => $this->status,
             "personal"          => new PersonalResource($this->personal),
+            "permissions"       => $this->permissions->map(function ($item) { return $item->name; })
         ];
     }
 }

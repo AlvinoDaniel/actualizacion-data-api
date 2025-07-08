@@ -14,7 +14,14 @@ class UnidadesResource extends ResourceCollection
      */
     public function toArray(Request $request)
     {
-        return $this->collection->map(function($item){
+        $subUnidades = collect([]);
+        $dataSubUnidades = [];
+        $unidades = $this->collection->map(function($item) use($subUnidades) {
+            if($item->entidad?->subunidades->count() > 0){
+                foreach ($item->entidad?->subunidades as $value) {
+                    $subUnidades->push($value);
+                }
+            }
             return [
                 "id"                    => $item?->id,
                 "cedula_identidad"      => $item?->cedula_identidad,
@@ -28,8 +35,31 @@ class UnidadesResource extends ResourceCollection
                     "id_unidad_ejec"            => $item->entidad?->unidad_ejecutora?->id,
                     "descripcion_unidad_ejec"   => $item->entidad?->unidad_ejecutora?->descripcion,
                     "descripcion_escuela"       => $item->entidad?->escuela?->descripcion,
+                    "subunidades"               => $subUnidades,
                 ]
             ];
         });
+
+        if($subUnidades->count() > 0){
+            $dataSubUnidades = $subUnidades->map(function($item) {
+                return [
+                    "id"                    => null,
+                    "cedula_identidad"      => null,
+                    "id_unidad_admin"       => $item?->id,
+                    "entidad"               => [
+                        "id_unidad_admin"           => $item?->id,
+                        "codigo_unidad_admin"       => $item?->codigo_unidad,
+                        "descripcion_unidad_admin"  => $item?->descripcion,
+                        "correo_dependencia"        => $item?->correo_dependencia,
+                        "codigo_unidad_ejec"        => $item?->unidad_ejecutora?->codigo_unidad,
+                        "id_unidad_ejec"            => $item?->unidad_ejecutora?->id,
+                        "descripcion_unidad_ejec"   => $item?->unidad_ejecutora?->descripcion,
+                        "descripcion_escuela"       => null,
+                    ]
+                ];
+            });
+        }
+
+        return $unidades->concat($dataSubUnidades);
     }
 }

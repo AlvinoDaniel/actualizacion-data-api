@@ -9,6 +9,7 @@ use App\Models\PersonalMigracion;
 use App\Models\PersonalUnidad;
 use App\Models\Unidad;
 use App\Models\UnidadAdministrativa;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Exception;
@@ -88,6 +89,12 @@ class PersonalRepository extends BaseRepository {
             if($item->jefe === 0){
                 $personal_all[] = $item;
             }
+        }
+
+        if($jefe){
+            $userJefe = User::where('personal_id', $jefe->id)->first();
+            $permissionsRegistered = $userJefe->getDirectPermissions();
+            $jefe->permissions = $permissionsRegistered->map(function ($item){ return $item->name; });
         }
 
         return [

@@ -28,6 +28,7 @@ class UnidadAdministrativa extends Model
     protected $casts = [
         'jefe' => 'boolean',
     ];
+    protected $with = ['unidad_ejecutora'];
 
     public function nucleo()
     {
@@ -42,5 +43,15 @@ class UnidadAdministrativa extends Model
     public function escuela()
     {
         return $this->hasOne(Escuela::class, 'id', 'cod_escuela');
+    }
+
+    public function unidad_padre()
+    {
+        return $this->belongsTo(UnidadAdministrativa::class, 'codigo_unidad', 'cod_unidad_padre');
+    }
+
+    public function subunidades()
+    {
+        return $this->hasMany(UnidadAdministrativa::class, 'cod_unidad_padre', 'codigo_unidad')->where('jefe', 0);
     }
 }
