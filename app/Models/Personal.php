@@ -36,6 +36,7 @@ class Personal extends Model
         'tipo_calzado',
         'prenda_extra',
         'sexo',
+        'id_cargo'
     ];
 
     protected $casts = [
@@ -63,6 +64,10 @@ class Personal extends Model
     public function tipoPersonal()
     {
         return $this->hasOne(TipoPersonal::class, 'id', 'tipo_personal');
+    }
+
+    public function cargoJefe(){
+        return $this->hasOne(CargoPersonal::class, 'id', 'id_cargo');
     }
 
     public function getHasUpdateAttribute() {

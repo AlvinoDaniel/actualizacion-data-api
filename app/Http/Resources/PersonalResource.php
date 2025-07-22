@@ -26,6 +26,7 @@ class PersonalResource extends JsonResource
             "cod_nucleo" => $this->cod_nucleo,
             "jefe" => $this->jefe,
             "cargo_jefe" => $this->cargo_jefe,
+            "cargo_personla_jefe" => $this->cargoPersonal,
             "correo" => $this->correo,
             "telefono" => $this->telefono,
             "pantalon" => $this->pantalon,

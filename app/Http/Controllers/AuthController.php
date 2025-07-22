@@ -70,7 +70,7 @@ class AuthController extends AppBaseController
     */
    public function me()
    {
-      $user = Auth::user()->load(['personal', 'permissions', 'personal.nucleo', 'personal.tipoPersonal', 'personal.unidades.entidad.escuela', 'personal.unidades.entidad.subunidades']);
+      $user = Auth::user()->load(['personal', 'permissions', 'personal.nucleo', 'personal.tipoPersonal', 'personal.cargoJefe', 'personal.unidades.entidad.escuela', 'personal.unidades.entidad.subunidades']);
 
       return $this->sendResponse([ 'user' => new UserMeResource($user) ], 'Datos de Usuario Logeado');
    }
