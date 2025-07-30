@@ -73,7 +73,7 @@ class Personal extends Model
     public function getHasUpdateAttribute() {
 
         $fields = collect($this->fillable);
-        $excludeFlieds = ["jefe", "cargo_jefe", "cargo_opsu"];
+        $excludeFlieds = ["jefe", "cargo_jefe", "cargo_opsu", "id_cargo"];
         return $fields->every(function ($value, $key) use($excludeFlieds) {
             if(in_array($value, $excludeFlieds)) return true;
             return $this[$value] !== null;
