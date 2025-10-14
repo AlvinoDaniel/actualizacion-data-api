@@ -104,13 +104,13 @@ class UserController extends AppBaseController
     public function update(UserUpdateRequest $request){
         $data = $request->all();
         try {
-            $personal = $this->repository->actualizarUsuario($data);
+            $personal = $this->repository->actualizarUsuario($request);
             return $this->sendResponse(
                 $personal,
                 'Usuario Actualizado exitosamente.'
             );
         } catch (\Throwable $th) {
-            return $this->sendError('Hubo un error al intentar Actualizar el Personal');
+            return $this->sendError('Hubo un error al intentar Actualizar el Personal: '.$th->getMessage());
         }
     }
 

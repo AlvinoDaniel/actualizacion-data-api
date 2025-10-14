@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Repositories\BaseRepository;
 use App\Models\User;
 use App\Models\Personal;
+use App\Models\UnidadAdministrativa;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -103,8 +104,19 @@ class UserRepository extends BaseRepository {
     try {
         $personal =  Personal::find($data_personal->id);
 
-        $personal->update($request);
+        $personal->update($request->except('correos_dependencia'));
         $personal->refresh();
+
+        if($request->correos_dependencia && count($request->correos_dependencia) > 0){
+          foreach ($request->correos_dependencia as $item) {
+            $dependencia = UnidadAdministrativa::find($item["id"]);
+            if($dependencia){
+              $dependencia->update([
+                "correo_dependencia"  => $item["value"]
+              ]);
+            }
+          }
+        }
         return $personal;
     } catch (\Throwable $th) {
         throw new Exception($th->getMessage(), $th->getCode());
