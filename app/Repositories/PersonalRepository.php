@@ -43,7 +43,8 @@ class PersonalRepository extends BaseRepository {
       }
 
       try {
-        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec', 'personal_unidades.id_unidad_admin')
+        // 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec',
+        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.id_unidad_admin')
             ->where('personal.cedula_identidad', '<>', Auth::user()->cedula)
             ->join('personal_unidades', function ($join) use($request, $jefe) {
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
@@ -67,7 +68,8 @@ class PersonalRepository extends BaseRepository {
       }
 
       try {
-        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec')
+        // 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec'
+        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre')
             // ->where(DB::raw("SUBSTR(personal.cod_nucleo, 1,1)"), $request->nucleo[0])
             ->join('personal_unidades', function ($join) use($request) {
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
@@ -307,7 +309,8 @@ class PersonalRepository extends BaseRepository {
 
      public function personalByUnidWithoutBoss($request){
       try {
-        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec', 'personal_unidades.id_unidad_admin', 'unidades_administrativas.descripcion as descripcion_unidad')
+        // 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec',
+        $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.id_unidad_admin', 'unidades_administrativas.descripcion as descripcion_unidad')
             ->where('personal.jefe', 0)
             ->join('personal_unidades', function ($join) {
                 $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad');
