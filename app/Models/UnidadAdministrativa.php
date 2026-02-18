@@ -13,7 +13,6 @@ class UnidadAdministrativa extends Model
     protected $fillable=[
         'cod_nucleo',
         'codigo_unidad',
-        'codigo_unidad_anterior',
         'descripcion',
         'correo_dependencia',
         'activo',
@@ -21,7 +20,6 @@ class UnidadAdministrativa extends Model
         'cod_escuela',
         'cod_unidad_padre',
         'año',
-        'cod_ejec_anterior',
         'jefe'
     ];
 
