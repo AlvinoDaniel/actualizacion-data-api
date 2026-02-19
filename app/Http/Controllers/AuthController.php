@@ -9,6 +9,8 @@ use App\Http\Controllers\AppBaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Resources\UserMeResource;
+use Spatie\Permission\Models\Permission;
 use App\Http\Resources\UserAuthCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -68,8 +70,9 @@ class AuthController extends AppBaseController
     */
    public function me()
    {
-      $user = Auth::user()->load(['personal', 'personal.nucleo', 'personal.tipoPersonal']);
-      return $this->sendResponse([ 'user' => $user ], 'Datos de Usuario Logeado');
+      $user = Auth::user()->load(['personal', 'permissions', 'personal.nucleo', 'personal.tipoPersonal', 'personal.cargoJefe', 'personal.unidades.entidad.escuela', 'personal.unidades.entidad.subunidades']);
+
+      return $this->sendResponse([ 'user' => new UserMeResource($user) ], 'Datos de Usuario Logeado');
    }
 
      /**
@@ -125,6 +128,39 @@ class AuthController extends AppBaseController
       } else {
          return $this->sendError('La contraseña actual no coincide con nuestros registros.', 422);
       }
+   }
+
+   public function allPermissions(){
+      try {
+         $permissions = Permission::all();
+         $convertData = collect([]);
+         foreach ($permissions as $permission) {
+            $convertData->push([
+               "id"    => $permission->id,
+               "name"  => $permission->name
+            ]);
+         }
+         return $this->sendResponse([ 'permissions' => $convertData ], 'Listado de Permisos');
+      } catch (\Throwable $th) {
+         return $this->sendError('Hubo un error al obtener los permisos', 422);
+      }
+
+   }
+
+   public function assignPermissions(Request $request){
+      try {
+        $userJefe = User::where('personal_id', $request->jefe)->first();
+        if(!$userJefe){
+            return $this->sendError('No existe registrado el usuario Jefe del Departamento.', 422);
+        }
+
+        $userJefe->syncPermissions($request->permissions);
+
+         return $this->sendSuccess('Permisos asignados exitosamente.');
+      } catch (\Throwable $th) {
+         return $this->sendError('Hubo un error al registrar los permisos => '. $th->getMessage(), 422);
+      }
+
    }
 
 }

@@ -21,6 +21,8 @@ Route::group([
       Route::delete('/{id}', 'destroy');
       Route::get('/search/{cedula}', 'search');
       Route::get('/all-by-unidad', 'personalAllUnidad');
+      Route::get('/all-lagging', 'getPersonalLagging');
+      Route::get('/unids-without-leadership', 'getUnidsWithoutLeadership');
     });
   });
 });

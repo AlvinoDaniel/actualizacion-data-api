@@ -14,12 +14,19 @@ class PersonalUnidad extends Model
         'cedula_identidad',
         'codigo_unidad_admin',
         'codigo_unidad_ejec',
+        'id_unidad_admin',
     ];
 
     protected $with = ['entidad'];
-    public function entidad()
+
+    // public function entidad()
+    // {
+    //     return $this->hasOne(Unidad::class, 'codigo_unidad_admin', 'codigo_unidad_admin');
+    // }
+
+     public function entidad()
     {
-        return $this->hasOne(Unidad::class, 'codigo_unidad_admin', 'codigo_unidad_admin');
+        return $this->hasOne(UnidadAdministrativa::class, 'id', 'id_unidad_admin');
     }
 
 }

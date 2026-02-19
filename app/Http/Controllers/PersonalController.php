@@ -136,8 +136,8 @@ class PersonalController extends AppBaseController
 
             $pdf = \PDF::loadView('pdf.personal_registrado', [
                'personal'           => $personal,
-                'unidad_admin'      => $unidad->descripcion_unidad_admin ?? '',
-                'unidad_ejec'       => $unidad->descripcion_unidad_ejec ?? '',
+                'unidad_admin'      => $unidad->descripcion ?? '',
+                'unidad_ejec'       => $unidad?->unidad_ejecutora?->descripcion ?? '',
                 'nucleo'            => $unidad->nucleo->nombre ?? '',
                 'fecha'             => Carbon::now()->format('d/m/Y'),
             ]);
@@ -209,5 +209,36 @@ class PersonalController extends AppBaseController
            return $this->sendError("Error al obtener los datos del Cliente.".$th->getMessage(), 420);
         }
 
+    }
+
+     /**
+     * Listar todo el Personal Sin Jefe.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getPersonalLagging(Request $request)
+    {
+        try {
+            $personal = $this->repository->personalByUnidWithoutBoss($request);
+            $message = 'Lista de Trabajadores';
+            return $this->sendResponse(['personal' => $personal], $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
+     /**
+     * Listar todo el Personal Sin Jefe.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getUnidsWithoutLeadership()
+    {
+        try {
+            $unids = $this->repository->getUnidsWithoutBoss();
+            $message = 'Lista de Unidades';
+            return $this->sendResponse(['unidades' => $unids], $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
     }
 }

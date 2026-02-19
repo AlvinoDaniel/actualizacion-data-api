@@ -1,0 +1,192 @@
+[
+  {
+    "codigo_unidad": "A101020200",
+    "descripcion": "Decanato",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101020400",
+    "descripcion": "Dirección y/o Delegación de Consultoría Jurídica",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101030200",
+    "descripcion": "Comunicación Corporativa",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101070100",
+    "descripcion": "Dirección y/o Delegación de Planificación",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101140300",
+    "descripcion": "Dirección y/o Delegación de Cultura",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101140200",
+    "descripcion": "Dirección y/o Delegación de Deportes",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101150100",
+    "descripcion": "Dirección y/o Delegación de Planta Física",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101040500",
+    "descripcion": "Coordinación Académica",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101130100",
+    "descripcion": "Coordiinación General y/o Delegación de Control de Estudio",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101110100",
+    "descripcion": "Coordinación General  y/o Delegación de Postgrado",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101040400",
+    "descripcion": "Dirección y/o Delegación de Curricula",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101120100",
+    "descripcion": "Coordinación y/o Comisión de Investigación",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100704",
+    "descripcion": "Coordinación y/o Sección de Servicio Comunitario del Estudiante",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101140100",
+    "descripcion": "Dirección y/o Delegación de Desarrollo Estudiantil",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101040200",
+    "descripcion": "Comisión de Formación de Recursos Humanos",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101130208",
+    "descripcion": "Bibliotecas Centrales Áreas Interdisciplinarias",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101130300",
+    "descripcion": "Dirección y/o Delegación de Tecnología Educativa",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100401",
+    "descripcion": "Dirección y Gestión Escuelas Área Ciencias de la Salud",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100402",
+    "descripcion": "Departamento de Bioanálisis",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100404",
+    "descripcion": "Departamento de Enfermería",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100403",
+    "descripcion": "Departamento de Medicina",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100201",
+    "descripcion": "Dirección y Gestión Escuelas Areas de Ciencias Arquitectura, Ingeniería y Tecnológia",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100212",
+    "descripcion": "Departamento de Geología",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100213",
+    "descripcion": "Departamento de Ingeniería de Minas",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100207",
+    "descripcion": "Departamento de Ingeniería Civil",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101080100",
+    "descripcion": "Coordinación de Administración",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101080200",
+    "descripcion": "Dirección y/o Delegación de Finanzas",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101080203",
+    "descripcion": "Departamento de Contabilidad",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101070200",
+    "descripcion": "Dirección y/o Delegación de Presupuesto",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101060100",
+    "descripcion": "Dirección y/o Delegación de Personal",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101060200",
+    "descripcion": "Departamento de Nómina",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101150200",
+    "descripcion": "Coordinación y/o Sección de Servicios Generales",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101080101",
+    "descripcion": "Sección de Compras",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101020300",
+    "descripcion": "Dirección Sub-Núcleos y Extensiones",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101020400",
+    "descripcion": "Dirección y/o Delegación de Consultoría Jurídica",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101070100",
+    "descripcion": "Dirección y/o Delegación de Planificación",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101090100",
+    "descripcion": "Dirección y/o Delegación de Teleinformática",
+    "año": 2025
+  },
+  {
+    "codigo_unidad": "A101100701",
+    "descripcion": "Unidad de Cursos Básicos - Dirección",
+    "año": 2025
+  }
+]

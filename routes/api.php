@@ -32,6 +32,8 @@ Route::group([
         //  Route::post('/reset-password',[AuthController::class, 'sendResetPasswordEmail']);
          Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/me', [AuthController::class, 'me'])->name('me');
+            Route::get('/all-permissions', [AuthController::class, 'allPermissions'])->name('allPermissions')->middleware('admin');
+            Route::post('/register-permissions', [AuthController::class, 'assignPermissions'])->name('assignPermissions')->middleware('admin');
             Route::get('/logout', [AuthController::class, 'logout']);
             // Route::get('/revoketoken', [AuthController::class, 'RevokeToken']);
             Route::post('/changepassword', [AuthController::class, 'changePassword']);
