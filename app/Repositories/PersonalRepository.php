@@ -145,14 +145,28 @@ class PersonalRepository extends BaseRepository {
     }
 }
 
-  public function searchPersonal($cedula) {
-    $personal = Personal::where('cedula_identidad', $cedula)->get();
+  public function searchPersonal($cedula, $registered) {
+    if($registered){
+        $personal = Personal::where('cedula_identidad', $cedula)->get();
 
-    if($personal->count() > 0){
-        throw new Exception('El Trabajador ya está registrado.', 422);
+        if($personal->count() > 0){
+            throw new Exception('El Trabajador ya está registrado.', 422);
+        }
     }
 
-    $search = PersonalMigracion::where('cedula_identidad', 'like', '%'. $cedula. '%')->first();
+    $search = PersonalMigracion::select('personal_migracion.*', 'personal.jefe', 'personal_unidades.id_unidad_admin' )
+        ->where('personal_migracion.cedula_identidad', 'like', '%'. $cedula. '%')
+        ->leftJoin('personal_unidades', function ($join){
+            $join->on('personal_unidades.cedula_identidad', '=', 'personal_migracion.cedula_identidad');
+        })
+        ->leftJoin('personal', function ($join){
+            $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad');
+        })
+        ->first();
+
+    if(!$search){
+        throw new Exception('El Trabajador no existe en nuestros registros.', 422);
+    }
 
     return $search;
   }
@@ -307,7 +321,7 @@ class PersonalRepository extends BaseRepository {
         }
     }
 
-     public function personalByUnidWithoutBoss($request){
+    public function personalByUnidWithoutBoss($request){
       try {
         // 'personal_unidades.codigo_unidad_admin', 'personal_unidades.codigo_unidad_ejec',
         $personal = DB::table('personal')->select('personal.*', 'tipo_personal.descripcion as tipo_personal_descripcion', 'nucleo.nombre as nucleo_nombre', 'personal_unidades.id_unidad_admin', 'unidades_administrativas.descripcion as descripcion_unidad')
@@ -328,6 +342,91 @@ class PersonalRepository extends BaseRepository {
       } catch (\Throwable $th) {
         throw new Exception($th->getMessage());
       }
-  }
+    }
+
+    /**
+   * Listar todo los Jefes registrado
+   */
+    public function jefesRegistrado($request){
+        try {
+            $personal = DB::table('unidades_administrativas')->select('personal.*','unidades_administrativas.descripcion as descripcion_unidad_admin', 'unidades_administrativas.codigo_unidad as codigo_unidad_admin','nucleo.nombre', 'unidades_administrativas.cod_nucleo', 'personal_unidades.id_unidad_admin', 'personal_unidades.id as id_personal_unidad')
+                ->leftJoin('personal_unidades', function ($join){
+                    $join->on('personal_unidades.id_unidad_admin', '=', 'unidades_administrativas.id')
+                    ->join('personal', function ($join){
+                        $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
+                        ->where('personal.jefe', 1);
+                    });
+                })
+                ->leftJoin('nucleo', 'unidades_administrativas.cod_nucleo', '=', 'nucleo.codigo_concatenado');
+
+            if(isset($request->nucleo)){
+                $personal->where('unidades_administrativas.cod_nucleo', $request["nucleo"]);
+            }
+            $data = $personal->get();
+            return $data;
+        } catch (\Throwable $th) {
+            throw new Exception($th->getMessage(), 421);
+        }
+    }
+    /**
+   * ACTUALIZAR JEFATURA
+   */
+    public function actualizarJefatura($request){
+        try {
+            $jefeActual = DB::table('personal_unidades')->select('personal.*')
+                ->where('personal_unidades.id_unidad_admin', $request['id_unidad_admin'])
+                ->join('personal', function ($join){
+                    $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
+                    ->where('personal.jefe', 1);
+                })->first();
+
+            if($jefeActual->cedula_identidad === $request['cedula_identidad']){
+                $updateJefeActual = Personal::where('cedula_identidad', $jefeActual->cedula_identidad)
+                    ->update(["id_cargo"  => $request['id_cargo']]);
+                 return $updateJefeActual;
+            } else {
+                $updateJefeActual = Personal::where('cedula_identidad', $jefeActual->cedula_identidad)
+                    ->update(["id_cargo"  => null, "jefe"   => 0]);
+            }
+
+            $jefeNuevo = Personal::where('cedula_identidad', $request['cedula_identidad'])->first();
+
+            if(!$jefeNuevo){
+                $personal = PersonalMigracion::where('cedula_identidad', $request['cedula_identidad'])->first();
+
+                $nuevoPersonal = Personal::nuevoPersonal([
+                    'nombres_apellidos'   => $personal->nombres,
+                    'cedula_identidad'    => $personal->cedula_identidad,
+                    'tipo_personal'       => $personal->tipo_personal,
+                    'cargo_opsu'          => $personal->cargo_opsu,
+                    'cod_nucleo'          => $personal->cod_nucleo,
+                    'correo'              => $personal->correo,
+                    'telefono'            => $personal->telefono,
+                    'sexo'                => $personal->sexo,
+                    'jefe'                => 1,
+                    'id_cargo'            => $request['id_cargo'],
+                ]);
+
+                $nuevoPersonal->unidades()->create([
+                    'id_unidad_admin'     => $request['id_unidad_admin'],
+                ]);
+
+                return $nuevoPersonal;
+            }
+
+            $jefeNuevo->update([
+                "id_cargo"  => $request['id_cargo'],
+                "jefe"      => 1,
+            ]);
+
+            $jefeNuevo->unidades()->update([
+                'id_unidad_admin'     => $request['id_unidad_admin'],
+            ]);
+
+            return $jefeNuevo;
+        } catch (\Throwable $th) {
+            throw new Exception($th->getMessage(), 421);
+        }
+    }
 
 }

@@ -56,7 +56,7 @@ class User extends Authenticatable
     }
 
     public function getIsAdminAttribute($value){
-        return UserAdmin::where('user_id', $this->id)->count() > 0;
+        return $this->hasRole('Super Admin');
     }
 
 

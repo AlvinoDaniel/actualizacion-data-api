@@ -21,6 +21,7 @@ class CatalogueController extends AppBaseController
         'TIPO_CALZADO'      => ['model' => \App\Models\TipoCalzado::class],
         'AREA_TRABAJO'      => ['model' => \App\Models\AreaTrabajo::class],
         'NUCLEO'            => ['model' => \App\Models\Nucleo::class],
+        'CARGO'            => ['model' => \App\Models\CargoPersonal::class],
     ];
 
     public function __construct(Request $request)

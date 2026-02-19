@@ -113,9 +113,10 @@ class PersonalController extends AppBaseController
 
     public function search(Request $request) {
         $cedula = $request->cedula;
+        $registered = filter_var($request->registered, FILTER_VALIDATE_BOOLEAN);
 
         try {
-            $result = $this->repository->searchPersonal($cedula);
+            $result = $this->repository->searchPersonal($cedula, $registered);
             return $this->sendResponse(
                 $result,
                 'Resultado de la Busqueda.'
@@ -241,4 +242,37 @@ class PersonalController extends AppBaseController
             return $this->sendError($th->getMessage());
         }
     }
+
+     /**
+     * Listar todo los Jefes Registrados.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function bossAllNucleo(Request $request)
+    {
+        try {
+            $boss = $this->repository->jefesRegistrado($request);
+            $message = 'Lista de Trabajadores';
+            return $this->sendResponse($boss, $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
+
+     /**
+     * Listar todo los Jefes Registrados.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateBoss(Request $request)
+    {
+        try {
+            $boss = $this->repository->actualizarJefatura($request);
+            $message = 'Actualizacion exitosa';
+            return $this->sendResponse($boss, $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
+
 }

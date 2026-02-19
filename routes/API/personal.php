@@ -23,6 +23,8 @@ Route::group([
       Route::get('/all-by-unidad', 'personalAllUnidad');
       Route::get('/all-lagging', 'getPersonalLagging');
       Route::get('/unids-without-leadership', 'getUnidsWithoutLeadership');
+      Route::post('/update/boss', 'updateBoss');
+      Route::get('/boss-all', 'bossAllNucleo');
     });
   });
 });
