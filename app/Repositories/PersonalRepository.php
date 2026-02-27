@@ -133,9 +133,7 @@ class PersonalRepository extends BaseRepository {
       DB::beginTransaction();
         $personal = Personal::create($data);
         $personal->unidades()->create([
-        //   'codigo_unidad_admin' => $unidad_admin,
-        //   'codigo_unidad_ejec'  => $unidad_ejec,
-          'id_unidad_admin'     => $request['unidad'],
+          'id_unidad_admin'     => $departamento->id_unidad_admin,
         ]);
       DB::commit();
       return $personal;
