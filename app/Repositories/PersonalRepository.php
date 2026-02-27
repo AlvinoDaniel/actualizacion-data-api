@@ -419,7 +419,7 @@ class PersonalRepository extends BaseRepository {
                 "jefe"      => 1,
             ]);
 
-            $jefeNuevo->unidades()->update([
+            $jefeNuevo->unidades()->create([
                 'id_unidad_admin'     => $request['id_unidad_admin'],
             ]);
 
