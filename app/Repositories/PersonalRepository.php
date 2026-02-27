@@ -378,11 +378,12 @@ class PersonalRepository extends BaseRepository {
                     ->where('personal.jefe', 1);
                 })->first();
 
-            if($jefeActual->cedula_identidad === $request['cedula_identidad']){
+            if($jefeActual && $jefeActual->cedula_identidad === $request['cedula_identidad']){
                 $updateJefeActual = Personal::where('cedula_identidad', $jefeActual->cedula_identidad)
                     ->update(["id_cargo"  => $request['id_cargo']]);
-                 return $updateJefeActual;
-            } else {
+                return $updateJefeActual;
+            } 
+            if($jefeActual && $jefeActual->cedula_identidad !== $request['cedula_identidad']) {
                 $updateJefeActual = Personal::where('cedula_identidad', $jefeActual->cedula_identidad)
                     ->update(["id_cargo"  => null, "jefe"   => 0]);
             }
