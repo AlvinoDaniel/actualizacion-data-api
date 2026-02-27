@@ -347,7 +347,7 @@ class PersonalRepository extends BaseRepository {
    */
     public function jefesRegistrado($request){
         try {
-            $personal = DB::table('unidades_administrativas')->select('personal.*','unidades_administrativas.descripcion as descripcion_unidad_admin', 'unidades_administrativas.codigo_unidad as codigo_unidad_admin','nucleo.nombre', 'unidades_administrativas.cod_nucleo', 'personal_unidades.id_unidad_admin', 'personal_unidades.id as id_personal_unidad')
+            $personal = DB::table('unidades_administrativas')->select('personal.*','unidades_administrativas.descripcion as descripcion_unidad_admin', 'unidades_administrativas.codigo_unidad as codigo_unidad_admin','nucleo.nombre', 'unidades_administrativas.cod_nucleo', 'unidades_administrativas.id as id_unidad_admin', 'personal_unidades.id as id_personal_unidad')
                 ->leftJoin('personal_unidades', function ($join){
                     $join->on('personal_unidades.id_unidad_admin', '=', 'unidades_administrativas.id')
                     ->join('personal', function ($join){
