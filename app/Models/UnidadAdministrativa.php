@@ -25,6 +25,7 @@ class UnidadAdministrativa extends Model
 
     protected $casts = [
         'jefe' => 'boolean',
+        'activo' => 'boolean',
     ];
     protected $with = ['unidad_ejecutora'];
 
@@ -40,7 +41,7 @@ class UnidadAdministrativa extends Model
 
     public function escuela()
     {
-        return $this->hasOne(Escuela::class, 'id', 'cod_escuela');
+        return $this->hasOne(Escuela::class, 'codigo', 'cod_escuela');
     }
 
     public function unidad_padre()

@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogueController;
+use App\Http\Controllers\NucleoController;
+use App\Http\Controllers\UnidadAdminController;
+use App\Http\Controllers\UnidadEjecutoraController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -49,4 +52,39 @@ Route::group([
    Route::middleware(['auth:sanctum'])->group(function () {
       Route::post('/catalogue', CatalogueController::class);
    });
+});
+
+Route::group([
+	'middleware'  => 'api',
+  'prefix'      => 'nucleo'
+], function () {
+
+  Route::middleware(['auth:sanctum'])->group(function () {
+    Route::controller(NucleoController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/store', 'store')->middleware('transform.upper');
+        Route::post('/update/{id}', 'update')->middleware('transform.upper');
+        Route::delete('/delete/{id}', 'destroy');
+    });
+  });
+});
+
+Route::group([
+	'middleware'  => 'api',
+  'prefix'      => 'unidad'
+], function () {
+  Route::middleware(['auth:sanctum'])->group(function () {
+    Route::controller(UnidadEjecutoraController::class)->group(function () {
+        Route::get('ejecutora/', 'index');
+        Route::post('ejecutora/store', 'store')->middleware('transform.upper');
+        Route::post('ejecutora/update/{id}', 'update')->middleware('transform.upper');
+        Route::delete('ejecutora/delete/{id}', 'destroy');
+    });
+    Route::controller(UnidadAdminController::class)->group(function () {
+        Route::get('administrativa/', 'index');
+        Route::post('administrativa/store', 'store')->middleware('transform.upper');
+        Route::post('administrativa/update/{id}', 'update')->middleware('transform.upper');
+        Route::delete('administrativa/delete/{id}', 'destroy');
+    });
+  });
 });

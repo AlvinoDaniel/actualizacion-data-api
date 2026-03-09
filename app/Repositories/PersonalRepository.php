@@ -347,12 +347,15 @@ class PersonalRepository extends BaseRepository {
    */
     public function jefesRegistrado($request){
         try {
-            $personal = DB::table('unidades_administrativas')->select('personal.*','unidades_administrativas.descripcion as descripcion_unidad_admin', 'unidades_administrativas.codigo_unidad as codigo_unidad_admin','nucleo.nombre', 'unidades_administrativas.cod_nucleo', 'unidades_administrativas.id as id_unidad_admin', 'personal_unidades.id as id_personal_unidad')
+            $personal = DB::table('unidades_administrativas')->select('personal.*','unidades_administrativas.descripcion as descripcion_unidad_admin', 'unidades_administrativas.codigo_unidad as codigo_unidad_admin','nucleo.nombre', 'unidades_administrativas.cod_nucleo', 'unidades_administrativas.id as id_unidad_admin', 'personal_unidades.id as id_personal_unidad', 'cargos_personal.descripcion as cargo_personal')
                 ->leftJoin('personal_unidades', function ($join){
                     $join->on('personal_unidades.id_unidad_admin', '=', 'unidades_administrativas.id')
                     ->join('personal', function ($join){
                         $join->on('personal.cedula_identidad', '=', 'personal_unidades.cedula_identidad')
                         ->where('personal.jefe', 1);
+                    })
+                    ->leftJoin('cargos_personal', function ($join){
+                        $join->on('personal.id_cargo', '=', 'cargos_personal.id');
                     });
                 })
                 ->leftJoin('nucleo', 'unidades_administrativas.cod_nucleo', '=', 'nucleo.codigo_concatenado');
@@ -378,14 +381,32 @@ class PersonalRepository extends BaseRepository {
                     ->where('personal.jefe', 1);
                 })->first();
 
-            if($jefeActual && $jefeActual->cedula_identidad === $request['cedula_identidad']){
+            $updateJefeActual = $jefeActual?->cedula_identidad === $request['cedula_identidad'];
+            $eliminarJefe = isset($request["eliminar_jefe"]) && $request["eliminar_jefe"] === 1;
+            if($jefeActual && $updateJefeActual){
                 $updateJefeActual = Personal::where('cedula_identidad', $jefeActual->cedula_identidad)
                     ->update(["id_cargo"  => $request['id_cargo']]);
+                if($eliminarJefe){
+                    $modelJefeActual = Personal::find($jefeActual->id);
+                    $modelJefeActual->unidades()->delete();
+                    $modelJefeActual->usuario()->delete();
+                    $modelJefeActual->delete();
+                    return [
+                        "delete" => true
+                    ];
+                }
                 return $updateJefeActual;
-            } 
-            if($jefeActual && $jefeActual->cedula_identidad !== $request['cedula_identidad']) {
+            }
+            if($jefeActual && !$updateJefeActual) {
                 $updateJefeActual = Personal::where('cedula_identidad', $jefeActual->cedula_identidad)
                     ->update(["id_cargo"  => null, "jefe"   => 0]);
+            }
+
+            if($jefeActual && $eliminarJefe){
+                $modelJefeActual = Personal::find($jefeActual->id);
+                $modelJefeActual->unidades()->delete();
+                $modelJefeActual->usuario()->delete();
+                $modelJefeActual->delete();
             }
 
             $jefeNuevo = Personal::where('cedula_identidad', $request['cedula_identidad'])->first();
@@ -413,11 +434,13 @@ class PersonalRepository extends BaseRepository {
                 return $nuevoPersonal;
             }
 
+            if(!$jefeNuevo->jefe){
+                $jefeNuevo->unidades()->delete();
+            }
             $jefeNuevo->update([
                 "id_cargo"  => $request['id_cargo'],
                 "jefe"      => 1,
             ]);
-
             $jefeNuevo->unidades()->create([
                 'id_unidad_admin'     => $request['id_unidad_admin'],
             ]);
