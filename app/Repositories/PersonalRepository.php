@@ -414,7 +414,7 @@ class PersonalRepository extends BaseRepository {
             if(!$jefeNuevo){
                 $personal = PersonalMigracion::where('cedula_identidad', $request['cedula_identidad'])->first();
 
-                $nuevoPersonal = Personal::nuevoPersonal([
+                $nuevoPersonal = Personal::create([
                     'nombres_apellidos'   => $personal->nombres,
                     'cedula_identidad'    => $personal->cedula_identidad,
                     'tipo_personal'       => $personal->tipo_personal,
