@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Repositories\UnidadEjecutoraRepository;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\UnidadEjecutoraRequest;
+use App\Models\UnidadAdministrativa;
+use App\Models\UnidadEjecutora;
 
 class UnidadEjecutoraController extends AppBaseController
 {
@@ -81,7 +83,14 @@ class UnidadEjecutoraController extends AppBaseController
     public function destroy($id)
     {
         try {
-            $this->repository->delete($id);
+            $unidadAdmin = UnidadAdministrativa::where('id_unidad_ejec', $id)->first();
+
+            // Verificamos si existe la relación
+            // Como es hasOne, si existe, el atributo 'unidadAdmin' no será null
+            if ($unidadAdmin) {
+                return $this->sendError("No se puede eliminar: La Unidad Ejecutora '{$unidadAdmin?->unidad_ejecutora?->descripcion}' esta asociado a la unidad administrativa ".$unidadAdmin?->descripcion, 422);
+            }
+            // $this->repository->delete($id);
             return $this->sendSuccess(
                 'Unidad Eliminada Exitosamente.'
             );

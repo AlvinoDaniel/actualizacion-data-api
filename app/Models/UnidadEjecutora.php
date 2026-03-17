@@ -15,4 +15,9 @@ class UnidadEjecutora extends Model
         'descripcion',
         'año',
     ];
+
+    public function unidadAdmin(){
+        return $this->belongsTo(UnidadAdministrativa::class, 'id_unidad_ejec', 'id');
+    }
+
 }

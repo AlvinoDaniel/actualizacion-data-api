@@ -53,4 +53,9 @@ class UnidadAdministrativa extends Model
     {
         return $this->hasMany(UnidadAdministrativa::class, 'cod_unidad_padre', 'codigo_unidad')->where('jefe', 0);
     }
+
+    public function personal()
+    {
+        return $this->hasMany(PersonalUnidad::class, 'id_unidad_admin');
+    }
 }

@@ -78,13 +78,13 @@ Route::group([
         Route::get('ejecutora/', 'index');
         Route::post('ejecutora/store', 'store')->middleware('transform.upper');
         Route::post('ejecutora/update/{id}', 'update')->middleware('transform.upper');
-        Route::delete('ejecutora/delete/{id}', 'destroy');
+        Route::delete('ejecutora/{id}', 'destroy');
     });
     Route::controller(UnidadAdminController::class)->group(function () {
         Route::get('administrativa/', 'index');
         Route::post('administrativa/store', 'store')->middleware('transform.upper');
         Route::post('administrativa/update/{id}', 'update')->middleware('transform.upper');
-        Route::delete('administrativa/delete/{id}', 'destroy');
+        Route::delete('administrativa/{id}', 'destroy');
     });
   });
 });

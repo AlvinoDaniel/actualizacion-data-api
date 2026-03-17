@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\UnidadAdminRequest;
 use App\Http\Requests\UnidadEjecutoraRequest;
+use App\Models\UnidadAdministrativa;
 use App\Repositories\UnidadAdminRepository;
 
 class UnidadAdminController extends AppBaseController
@@ -91,6 +92,12 @@ class UnidadAdminController extends AppBaseController
     public function destroy($id)
     {
         try {
+            $unidadAdmin = UnidadAdministrativa::with('personal')->find($id);
+            $hasPersonal = $unidadAdmin->personal()->count() > 0;
+
+            if ($hasPersonal) {
+                return $this->sendError("No se puede eliminar: La Unidad Administrativa '{$unidadAdmin->descripcion}' tiene un personal asociado.", 422);
+            }
             $this->repository->delete($id);
             return $this->sendSuccess(
                 'Unidad Eliminada Exitosamente.'
