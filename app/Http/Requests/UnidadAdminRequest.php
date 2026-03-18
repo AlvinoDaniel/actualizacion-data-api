@@ -31,10 +31,7 @@ class UnidadAdminRequest extends FormRequest
                     return $query->where('codigo_unidad', strtoupper($this->codigo));
                 })->ignore($this->route('id'))],
             'nombre'    => [
-                "required",
-                Rule::unique('unidades_administrativas', 'descripcion')->where(function($query){
-                    return $query->where('descripcion', strtoupper($this->nombre));
-                })->ignore($this->route('id'))
+                "required"
             ],
             'cod_nucleo'            => "required|exists:nucleo,codigo_concatenado",
             'cod_unidad_padre'      => "exists:unidades_administrativas,codigo_unidad",
