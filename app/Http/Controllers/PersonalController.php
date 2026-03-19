@@ -8,6 +8,7 @@ use App\Repositories\PersonalRepository;
 use App\Http\Requests\PersonalRequest;
 use Carbon\Carbon;
 use App\Exports\ReporteAllExport;
+use App\Models\PersonalUnidad;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PersonalController extends AppBaseController
@@ -80,6 +81,12 @@ class PersonalController extends AppBaseController
         $data = $request->all();
         try {
             $personal = $this->repository->actualizar($data, $id);
+            $unidad = $personal?->unidades[0]?->id_unidad_admin;
+            if(isset($request["multiple"]) && $request["multiple"] === true && $data["unidad"] !== $unidad){
+                PersonalUnidad::where('id', $personal?->unidades[0]?->id)->update([
+                    "id_unidad_admin"   => $data["unidad"]
+                ]);
+            }
             return $this->sendResponse(
                 $personal,
                 'Personal Actualzado exitosamente.'
