@@ -90,7 +90,7 @@ class UnidadEjecutoraController extends AppBaseController
             if ($unidadAdmin) {
                 return $this->sendError("No se puede eliminar: La Unidad Ejecutora '{$unidadAdmin?->unidad_ejecutora?->descripcion}' esta asociado a la unidad administrativa ".$unidadAdmin?->descripcion, 422);
             }
-            // $this->repository->delete($id);
+            $this->repository->delete($id);
             return $this->sendSuccess(
                 'Unidad Eliminada Exitosamente.'
             );
