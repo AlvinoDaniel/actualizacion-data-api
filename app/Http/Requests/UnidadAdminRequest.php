@@ -36,8 +36,8 @@ class UnidadAdminRequest extends FormRequest
             'cod_nucleo'            => "required|exists:nucleo,codigo_concatenado",
             'cod_unidad_padre'      => "exists:unidades_administrativas,codigo_unidad",
             'id_unidad_ejec'        => "exists:unidades_ejecutoras,id",
-            'cod_escuela'           => "exists:escuelas,codigo",
             'activo'                => 'boolean',
-        ];
+            ];
+            // 'cod_escuela'           => "exists:escuelas,codigo",
     }
 }
