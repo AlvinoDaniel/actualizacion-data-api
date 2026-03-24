@@ -44,7 +44,7 @@ class PersonalRequest extends FormRequest
             'area_trabajo'          => "required|exists:area_trabajo,id",
             'tipo_calzado'          => "required|exists:tipo_calzado,id",
             'prenda_extra'          => "required|exists:tipo_prenda,id",
-            'unidad'                => "required|exists:personal_unidades,id",
+            'unidad'                => "required",
             'nucleo'                => "required|exists:nucleo,codigo_concatenado",
         ];
     }

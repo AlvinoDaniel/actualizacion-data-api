@@ -110,8 +110,6 @@ class PersonalRepository extends BaseRepository {
 
   public function registrarPersonal($request){
     $departamento = PersonalUnidad::find($request['unidad']);
-    $unidad_admin = $departamento->codigo_unidad_admin;
-    $unidad_ejec = $departamento->codigo_unidad_ejec;
     $nucleo = Auth::user()->personal->cod_nucleo;
     $data = [
         'nombres_apellidos'   => $request[ 'nombres_apellidos'],
