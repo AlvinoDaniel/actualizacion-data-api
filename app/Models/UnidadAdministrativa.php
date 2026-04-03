@@ -25,6 +25,7 @@ class UnidadAdministrativa extends Model
 
     protected $casts = [
         'jefe' => 'boolean',
+        'activo' => 'boolean',
     ];
     protected $with = ['unidad_ejecutora'];
 
@@ -40,7 +41,7 @@ class UnidadAdministrativa extends Model
 
     public function escuela()
     {
-        return $this->hasOne(Escuela::class, 'id', 'cod_escuela');
+        return $this->hasOne(Escuela::class, 'codigo', 'cod_escuela');
     }
 
     public function unidad_padre()
@@ -51,5 +52,10 @@ class UnidadAdministrativa extends Model
     public function subunidades()
     {
         return $this->hasMany(UnidadAdministrativa::class, 'cod_unidad_padre', 'codigo_unidad')->where('jefe', 0);
+    }
+
+    public function personal()
+    {
+        return $this->hasMany(PersonalUnidad::class, 'id_unidad_admin');
     }
 }

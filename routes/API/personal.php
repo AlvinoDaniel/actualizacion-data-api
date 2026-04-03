@@ -15,14 +15,16 @@ Route::group([
       Route::get('/', 'index');
       Route::post('/', 'store');
       Route::get('/donwload/list', 'genareteList');
-      Route::get('/donwload-by-nucleo/list', 'genareteReport')->middleware('admin');
-      Route::get('/export/list', 'exportAllPersonal')->middleware('admin');
+      Route::get('/donwload-by-nucleo/list', 'genareteReport');
+      Route::get('/export/list', 'exportAllPersonal');
       Route::post('/{id}', 'update');
       Route::delete('/{id}', 'destroy');
       Route::get('/search/{cedula}', 'search');
       Route::get('/all-by-unidad', 'personalAllUnidad');
       Route::get('/all-lagging', 'getPersonalLagging');
       Route::get('/unids-without-leadership', 'getUnidsWithoutLeadership');
+      Route::post('/update/boss', 'updateBoss');
+      Route::get('/boss-all', 'bossAllNucleo');
     });
   });
 });

@@ -19,7 +19,7 @@ class UserMeResource extends JsonResource
         return [
             "id"                => $this->id,
             "cedula"            => $this->cedula,
-            "is_admin"          => $this->is_admin,
+            "issa"              => $this->is_admin,
             "personal_id"       => $this->personal_id,
             "status"            => $this->status,
             "personal"          => new PersonalResource($this->personal),

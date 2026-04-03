@@ -59,7 +59,7 @@ class Personal extends Model
 
     public function nucleo()
     {
-        return $this->hasOne(Nucleo::class, 'codigo_1', 'codigo_nucleo');
+        return $this->hasOne(Nucleo::class, 'codigo_concatenado', 'cod_nucleo');
     }
     public function tipoPersonal()
     {

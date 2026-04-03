@@ -8,6 +8,7 @@ use App\Repositories\PersonalRepository;
 use App\Http\Requests\PersonalRequest;
 use Carbon\Carbon;
 use App\Exports\ReporteAllExport;
+use App\Models\PersonalUnidad;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PersonalController extends AppBaseController
@@ -80,6 +81,12 @@ class PersonalController extends AppBaseController
         $data = $request->all();
         try {
             $personal = $this->repository->actualizar($data, $id);
+            $unidad = $personal?->unidades[0]?->id_unidad_admin;
+            if(isset($request["multiple"]) && $request["multiple"] === true && $data["unidad"] !== $unidad){
+                PersonalUnidad::where('id', $personal?->unidades[0]?->id)->update([
+                    "id_unidad_admin"   => $data["unidad"]
+                ]);
+            }
             return $this->sendResponse(
                 $personal,
                 'Personal Actualzado exitosamente.'
@@ -113,9 +120,10 @@ class PersonalController extends AppBaseController
 
     public function search(Request $request) {
         $cedula = $request->cedula;
+        $registered = filter_var($request->registered, FILTER_VALIDATE_BOOLEAN);
 
         try {
-            $result = $this->repository->searchPersonal($cedula);
+            $result = $this->repository->searchPersonal($cedula, $registered);
             return $this->sendResponse(
                 $result,
                 'Resultado de la Busqueda.'
@@ -241,4 +249,37 @@ class PersonalController extends AppBaseController
             return $this->sendError($th->getMessage());
         }
     }
+
+     /**
+     * Listar todo los Jefes Registrados.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function bossAllNucleo(Request $request)
+    {
+        try {
+            $boss = $this->repository->jefesRegistrado($request);
+            $message = 'Lista de Trabajadores';
+            return $this->sendResponse($boss, $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
+
+     /**
+     * Listar todo los Jefes Registrados.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateBoss(Request $request)
+    {
+        try {
+            $boss = $this->repository->actualizarJefatura($request);
+            $message = 'Actualizacion exitosa';
+            return $this->sendResponse($boss, $message);
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage());
+        }
+    }
+
 }
