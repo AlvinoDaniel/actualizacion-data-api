@@ -14,4 +14,9 @@ class CargoPersonal extends Model
         'codigo',
         'descripcion',
     ];
+
+    public function personal()
+    {
+        return $this->hasMany(\App\Models\Personal::class, 'id_cargo', 'id');
+    }
 }

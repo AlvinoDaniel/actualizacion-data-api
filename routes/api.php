@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogueController;
+use App\Http\Controllers\CargoPersonalController;
 use App\Http\Controllers\NucleoController;
+use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\UnidadAdminController;
 use App\Http\Controllers\UnidadEjecutoraController;
 use App\Http\Controllers\UserController;
@@ -85,6 +87,34 @@ Route::group([
         Route::post('administrativa/store', 'store')->middleware('transform.upper');
         Route::post('administrativa/update/{id}', 'update')->middleware('transform.upper');
         Route::delete('administrativa/{id}', 'destroy');
+    });
+  });
+});
+
+Route::group([
+	'middleware'  => 'api',
+  'prefix'      => 'cargo-personal'
+], function () {
+  Route::middleware(['auth:sanctum'])->group(function () {
+    Route::controller(CargoPersonalController::class)->group(function () {
+      Route::get('/', 'index');
+      Route::post('/store', 'store')->middleware('transform.upper');
+      Route::post('/update/{id}', 'update')->middleware('transform.upper');
+      Route::delete('/delete/{id}', 'destroy');
+    });
+  });
+});
+
+Route::group([
+	'middleware'  => 'api',
+  'prefix'      => 'personal'
+], function () {
+  Route::middleware(['auth:sanctum'])->group(function () {
+    Route::controller(PersonalController::class)->group(function () {
+      Route::post('/importar-masivo', 'importarMasivo');
+      Route::get('/by-cedula/{cedula}', 'getByCedula');
+      Route::get('/export-plantilla', 'exportarPlantillaImportacion');
+      Route::post('/update-unidades/{id}', 'actualizarUnidadPersonal');
     });
   });
 });

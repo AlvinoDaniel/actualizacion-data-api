@@ -139,7 +139,7 @@ class PersonalRepository extends BaseRepository {
       DB::rollBack();
       throw new Exception($th->getMessage());
     }
-}
+  }
 
   public function searchPersonal($cedula, $registered) {
     if($registered){
@@ -450,4 +450,153 @@ class PersonalRepository extends BaseRepository {
         }
     }
 
+    /** FUNCION PARA OBTENER LOS DATOS DE UN PERSONAL A TRAVES DE SU CEDULA DE LA TABLA PERSONAL CON TODAS SUS RELACIONES A TRAVEZ DEL MODELO PERSONAL Y PERSONAL_MIGRACION */
+    public function getPersonalByCedula($cedula){
+        try {
+            $personalMigracion = PersonalMigracion::where('cedula_identidad', $cedula)->first();
+
+            if(!$personalMigracion) {
+                throw new Exception('El Trabajador no existe en nuestros registros.', 422);
+            }
+
+            $personal = Personal::with(['nucleo', 'tipoPersonal', 'cargoJefe', 'unidades.entidad', 'unidades.entidad.unidad_ejecutora', 'unidades.entidad.escuela', 'unidades.entidad.unidad_padre'])->where('cedula_identidad', $cedula)->first();
+
+            return [
+                "personal" => $personal,
+                "migracion" => $personalMigracion,
+            ];
+        } catch (\Throwable $th) {
+            throw new Exception($th->getMessage(), 421);
+        }
+    }
+
+    /** Actualizar unidad administrativa asociada a un personal */
+    public function actualizarUnidadPersonal($id, $idUnidadAdmin)
+    {
+        try {
+            $personal = PersonalUnidad::findOrFail($id);
+            $personal->update(['id_unidad_admin' => $idUnidadAdmin]);
+            return $personal;
+        } catch (\Throwable $th) {
+            throw new Exception($th->getMessage(), 421);
+        }
+    }
+
+    /**
+     * Importar personal masivo desde CSV
+     */
+    public function importarPersonalMasivo($archivo)
+    {
+        if (!$archivo->isValid()) {
+            throw new Exception('Archivo no válido', 400);
+        }
+
+        $ruta = $archivo->getRealPath();
+
+        // Precargar cédulas para validación en RAM
+        $cedulasMap = array_flip(DB::table('personal_migracion')->pluck('cedula_identidad')->all());
+
+        $importados = 0;
+        $saltados = [];
+
+        try {
+            DB::beginTransaction();
+
+            $handle = fopen($ruta, 'r');
+            $lineaCabecera = fgetcsv($handle, 1000, ";");
+
+            // Limpiar posibles caracteres invisibles (BOM) en la primera cabecera
+            if ($lineaCabecera) {
+                $lineaCabecera[0] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $lineaCabecera[0]);
+            }
+
+            $headers = $lineaCabecera;
+
+            $lote = [];
+            while (($line = fgetcsv($handle, 1000, ";")) !== false) {
+                // Verificamos que la línea tenga el mismo número de elementos que la cabecera
+                if (count($headers) === count($line)) {
+                    $fila = array_combine($headers, $line);
+                    $cedula = trim($fila['cedula_identidad']);
+
+                    if (isset($cedulasMap[$cedula])) {
+                        $saltados[] = [
+                            'cedula' => $cedula,
+                            'nombres' => $fila['nombres'] ?? null,
+                        ];
+                        continue;
+                    }
+
+                    $lote[] = [
+                        'nombres'           => $fila['nombres'],
+                        'cedula_identidad'  => $cedula,
+                        'cargo_opsu'        => $fila['cargo_opsu'] ?? null,
+                        'cod_nucleo'        => $fila['cod_nucleo'] ?? null,
+                        'correo'            => $fila['correo'] ?? null,
+                        'tipo_personal'     => $fila['tipo_personal'] ?? null,
+                        'sexo'              => $fila['sexo'] ?? null,
+                        'telefono'          => $fila['telefono'] ?? null,
+                        'created_at'        => now(),
+                        'updated_at'        => now(),
+                    ];
+
+                    $cedulasMap[$cedula] = true;
+                    $importados++;
+
+                    // Insertar en lotes de 1000
+                    if (count($lote) >= 1000) {
+                        DB::table('personal_migracion')->insert($lote);
+                        $lote = [];
+                    }
+                }
+            }
+
+            // Insertar el último lote si hay datos
+            if (!empty($lote)) {
+                DB::table('personal_migracion')->insert($lote);
+            }
+
+            fclose($handle);
+            DB::commit();
+
+            return [
+                'importados' => $importados,
+                'saltados' => count($saltados),
+                'duplicados' => $saltados
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if (isset($handle) && $handle) {
+                fclose($handle);
+            }
+            throw new Exception('Error en la importación: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Exportar plantilla CSV para importación masiva
+     */
+    public function exportarPlantillaImportacion()
+    {
+        $headers = [
+            'nombres',
+            'cedula_identidad',
+            'cargo_opsu',
+            'cod_nucleo',
+            'correo',
+            'tipo_personal',
+            'sexo',
+            'telefono'
+        ];
+
+        $csv = fopen('php://memory', 'w');
+        fputcsv($csv, $headers, ';');
+
+        rewind($csv);
+        $content = stream_get_contents($csv);
+        fclose($csv);
+
+        return $content;
+    }
 }

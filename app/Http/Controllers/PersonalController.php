@@ -282,4 +282,65 @@ class PersonalController extends AppBaseController
         }
     }
 
+    /**
+     * Importar personal masivo desde CSV
+     */
+    public function importarMasivo(Request $request)
+    {
+        $request->validate([
+            'archivo' => 'required|file|mimes:csv,txt|max:20480', // 20MB max
+        ]);
+
+        try {
+            $resultado = $this->repository->importarPersonalMasivo($request->file('archivo'));
+            return $this->sendResponse($resultado, 'Importación completada exitosamente.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error en la importación: ' . $th->getMessage(), $th->getCode() ?: 500);
+        }
+    }
+
+    /**
+     * Obtener personal por cédula
+     */
+    public function getByCedula($cedula)
+    {
+        try {
+            $personal = $this->repository->getPersonalByCedula($cedula);
+            return $this->sendResponse($personal, 'Personal encontrado.');
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage(), $th->getCode() ?: 404);
+        }
+    }
+
+    /**
+     * Exportar plantilla CSV para importación masiva
+     */
+    public function exportarPlantillaImportacion()
+    {
+        try {
+            $content = $this->repository->exportarPlantillaImportacion();
+            return response($content, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="plantilla_importacion.csv"',
+            ]);
+        } catch (\Throwable $th) {
+            return $this->sendError('Error al exportar la plantilla: ' . $th->getMessage(), $th->getCode() ?: 500);
+        }
+    }
+
+    /** Actualizar unidad administrativa asociada a un personal */
+    public function actualizarUnidadPersonal(Request $request, $id)
+    {
+        $request->validate([
+            'unidad_admin_id' => 'required|exists:unidades_administrativas,id',
+        ]);
+
+        try {
+            $personal = $this->repository->actualizarUnidadPersonal($id, $request->unidad_admin_id);
+            return $this->sendResponse($personal, 'Unidad administrativa actualizada exitosamente.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error al actualizar la unidad administrativa: ' . $th->getMessage(), $th->getCode() ?: 500);
+        }
+    }
+
 }
