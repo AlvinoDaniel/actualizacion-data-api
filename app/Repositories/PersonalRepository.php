@@ -310,7 +310,8 @@ class PersonalRepository extends BaseRepository {
 
     public function getUnidsWithoutBoss(){
         try {
-            $unids = UnidadAdministrativa::where('jefe', 0)->get();
+            $nucleoUser = Auth::user()->personal?->cod_nucleo;
+            $unids = UnidadAdministrativa::where('jefe', 0)->where('cod_nucleo', $nucleoUser)->get();
             return $unids;
         } catch (\Throwable $th) {
             throw new Exception($th->getMessage());
@@ -390,6 +391,7 @@ class PersonalRepository extends BaseRepository {
                     $modelJefeActual->unidades()->delete();
                     $modelJefeActual->usuario()->delete();
                     $modelJefeActual->delete();
+                    UnidadAdministrativa::where('id', $request['id_unidad_admin'])->update(['jefe' => 0]);
                     return [
                         "delete" => true
                     ];
@@ -429,7 +431,7 @@ class PersonalRepository extends BaseRepository {
                 $nuevoPersonal->unidades()->create([
                     'id_unidad_admin'     => $request['id_unidad_admin'],
                 ]);
-
+                UnidadAdministrativa::where('id', $request['id_unidad_admin'])->update(['jefe' => 1]);
                 return $nuevoPersonal;
             }
 
@@ -443,7 +445,7 @@ class PersonalRepository extends BaseRepository {
             $jefeNuevo->unidades()->create([
                 'id_unidad_admin'     => $request['id_unidad_admin'],
             ]);
-
+            UnidadAdministrativa::where('id', $request['id_unidad_admin'])->update(['jefe' => 1]);
             return $jefeNuevo;
         } catch (\Throwable $th) {
             throw new Exception($th->getMessage(), 421);
