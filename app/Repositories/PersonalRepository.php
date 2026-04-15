@@ -52,8 +52,7 @@ class PersonalRepository extends BaseRepository {
                 // ->where('personal_unidades.codigo_unidad_ejec', $request->ejec);
             })
             ->leftJoin('tipo_personal', 'personal.tipo_personal', '=', 'tipo_personal.id')
-            // ->leftJoin('nucleo', 'personal.cod_nucleo', '=', 'nucleo.codigo_concatenado')
-            ->leftJoin('nucleo', DB::raw("SUBSTR(personal.cod_nucleo, 1,1)"), '=', 'nucleo.codigo_1')
+            ->leftJoin('nucleo', 'personal.cod_nucleo', '=', 'nucleo.codigo_concatenado')
             ->get();
         return $personal;
       } catch (\Throwable $th) {
