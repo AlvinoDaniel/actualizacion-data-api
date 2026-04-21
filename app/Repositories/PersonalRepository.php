@@ -80,7 +80,7 @@ class PersonalRepository extends BaseRepository {
                 // ->where(DB::raw("SUBSTR(unidades_administrativas.cod_nucleo, 1,1)"), $request->nucleo[0]);
             })
             ->leftJoin('tipo_personal', 'personal.tipo_personal', '=', 'tipo_personal.id')
-            ->leftJoin('nucleo', DB::raw("SUBSTR(unidades_administrativas.cod_nucleo, 1,1)"), '=', 'nucleo.codigo_1')
+            ->leftJoin('nucleo', 'unidades_administrativas.cod_nucleo', '=', 'nucleo.codigo_concatenado')
             ->get();
 
         $jefe = $personal->where('jefe', 1)->first();
