@@ -7,6 +7,7 @@ use App\Http\Requests\UnidadAdminRequest;
 use App\Http\Requests\UnidadEjecutoraRequest;
 use App\Models\UnidadAdministrativa;
 use App\Repositories\UnidadAdminRepository;
+use Illuminate\Http\Request;
 
 class UnidadAdminController extends AppBaseController
 {
@@ -17,10 +18,10 @@ class UnidadAdminController extends AppBaseController
         $this->repository = $unidadAdminRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $data = $this->repository->all(['nucleo','escuela','unidad_padre']);
+            $data = $this->repository->allUnidadByNucleo($request);
             $message = 'Lista de Unidades Administrativas';
             return $this->sendResponse(['unidades' => $data], $message);
         } catch (\Throwable $th) {
