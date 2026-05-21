@@ -28,23 +28,22 @@ class UpdateTableUnidadAdmin extends Command
      */
     public function handle()
     {
-        $unidadEjecJson = file_get_contents(base_path('database/json/UNIDAD_EJEC_BOLIVAR.json'));
+        $unidadEjecJson = file_get_contents(base_path('database/json/UNIDAD_ADMIN_EJEC_NE.json'));
         $unidadEjecData = collect(json_decode($unidadEjecJson));
         $this->line('Iniciando actualizacion...');
         try {
-        //    $unidades = UnidadAdministrativa::select('unidades_administrativas.id', 'unidades_administrativas.cod_ejec_anterior', 'unidades_ejecutoras.id as id_ejec' )
-        //     ->join('unidades_ejecutoras', 'unidades_administrativas.cod_ejec_anterior', 'unidades_ejecutoras.codigo_unidad')
-        //     ->get();
 
             foreach ($unidadEjecData as $item) {
-                $search = DB::table('unidades_ejecutoras')->where('codigo_unidad', $item->codigo_unidad)->first();
-                if(!$search){
-                    $insert =DB::table('unidades_ejecutoras')->insert([
-                        "codigo_unidad"     => $item->codigo_unidad,
-                        "descripcion"       => $item->descripcion,
-                        "año"               => $item->año
+                $search = DB::table('unidades_ejecutoras')->where('codigo_unidad', $item->CODIGO_UNIDAD_EJECUTORA)->first();
+                $unidadAdmin = DB::table('unidades_administrativas')->where('codigo_unidad', $item->CODIGO_UNIDAD_ADMINISTRATIVA)->first();
+                if(isset($search) && isset($unidadAdmin)){
+                  $unidadAdminUpdate = DB::table('unidades_administrativas')->where('id', $unidadAdmin->id)
+                    ->update([
+                        'id_unidad_ejec' => $search->id,
                     ]);
-                    $this->line($item->codigo_unidad. ' - ' . $insert);
+                  $this->line($item->CODIGO_UNIDAD_ADMINISTRATIVA. ' - '. 'UNIDAD ADMINISTRATIVA ACTUALIZADA');
+                } else {
+                    $this->line($item->CODIGO_UNIDAD_ADMINISTRATIVA. ' - '. 'NO SE ENCONTRO LA UNIDAD EJECUTORA O ADMINISTRATIVA');
                 }
             }
 
