@@ -15,7 +15,7 @@ class UpdateTablePersonalUnidad extends Command
      *
      * @var string
      */
-    protected $signature = 'app:update-table-personal-unidad';
+    protected $signature = 'app:update-table-personal-unidad {file}';
 
     /**
      * The console command description.
@@ -29,7 +29,8 @@ class UpdateTablePersonalUnidad extends Command
      */
     public function handle()
     {
-        $unidadAdminJson = file_get_contents(base_path('database/json/JEFES_NUEVA_ESPARTA.json'));
+        $file = $this->argument('file');
+        $unidadAdminJson = file_get_contents(base_path('database/json/'. $file .'.json'));
         $unidadAdmincData = collect(json_decode($unidadAdminJson));
         $this->line('Iniciando actualizacion...');
         try {
