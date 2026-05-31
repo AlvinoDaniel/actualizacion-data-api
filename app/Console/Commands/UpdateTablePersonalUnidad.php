@@ -37,6 +37,10 @@ class UpdateTablePersonalUnidad extends Command
             $count = 0;
              foreach ($unidadAdmincData as $item) {
 
+                if(empty($item->CEDULA_RESPONSABLE) || empty($item->CODIGO_UNIDAD_ADMINISTRATIVA)){
+                    $this->line('Registro con datos incompletos: CEDULA_RESPONSABLE o CODIGO_UNIDAD_ADMINISTRATIVA vacíos');
+                    continue;
+                }
                 $search = DB::table('personal')->where('cedula_identidad', $item->CEDULA_RESPONSABLE)->first();
                 $migracion = DB::table('personal_migracion')->where('cedula_identidad', $item->CEDULA_RESPONSABLE)->first();
                 $unid_admin = DB::table('unidades_administrativas')->where('codigo_unidad', $item->CODIGO_UNIDAD_ADMINISTRATIVA)->first();
@@ -70,6 +74,8 @@ class UpdateTablePersonalUnidad extends Command
                     ]);
                     $this->line($item->CEDULA_RESPONSABLE. ' - '. $insert_personal);
                     $this->line($item->CEDULA_RESPONSABLE. ' - '. 'PERSONAL CREADO');
+                    DB::table('unidades_administrativas')->where("id", $unid_admin->id)
+                     ->update(["jefe" => 1]);
                     continue;
                  }
 
@@ -77,6 +83,8 @@ class UpdateTablePersonalUnidad extends Command
                  if(isset($existeVinculacion)){
                      DB::table('personal_unidades')->where('cedula_identidad', $item->CEDULA_RESPONSABLE)
                      ->update(["id_unidad_admin" => $unid_admin->id]);
+                    DB::table('unidades_administrativas')->where("id", $unid_admin->id)
+                     ->update(["jefe" => 1]);
                     $this->line($item->CEDULA_RESPONSABLE. ' - VINCULACION ACTUALIZADA');
                     continue;
                  } else {
@@ -84,6 +92,8 @@ class UpdateTablePersonalUnidad extends Command
                         "cedula_identidad"        => $item->CEDULA_RESPONSABLE,
                         "id_unidad_admin"         => $unid_admin->id,
                     ]);
+                    DB::table('unidades_administrativas')->where("id", $unid_admin->id)
+                     ->update(["jefe" => 1]);
                     $this->line($item->CEDULA_RESPONSABLE. ' - '. 'VINCULACION CREADA');
                  }
 
