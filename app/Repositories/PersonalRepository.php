@@ -566,6 +566,8 @@ class PersonalRepository extends BaseRepository {
         ];
 
         $csv = fopen('php://memory', 'w');
+        // Write UTF-8 BOM so Excel and other programs recognize the file encoding
+        fwrite($csv, "\xEF\xBB\xBF");
         fputcsv($csv, $headers, ';');
 
         rewind($csv);

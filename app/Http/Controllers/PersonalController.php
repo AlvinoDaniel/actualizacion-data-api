@@ -320,7 +320,7 @@ class PersonalController extends AppBaseController
         try {
             $content = $this->repository->exportarPlantillaImportacion();
             return response($content, 200, [
-                'Content-Type' => 'text/csv',
+                'Content-Type' => 'text/csv; charset=UTF-8',
                 'Content-Disposition' => 'attachment; filename="plantilla_importacion.csv"',
             ]);
         } catch (\Throwable $th) {
